@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LAB53 — Coming Soon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%2300A99D'/%3E%3Ctext x='32' y='44' font-family='Poppins, sans-serif' font-weight='700' font-size='34' fill='white' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #00A99D;
+    --bg: #FAFAF8;
+    --text: #2b2b2b;
+    --muted: #9a9a9a;
+    --line: #e6e4df;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text);
+  }
+  .wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: clamp(48px, 10vw, 96px);
+    letter-spacing: 0.028em;
+    color: var(--accent);
+    margin: 0;
+    line-height: 1;
+  }
+  .status {
+    margin-top: 28px;
+    font-weight: 300;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    font-size: clamp(12px, 2vw, 15px);
+    color: var(--muted);
+  }
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: var(--accent);
+    margin: 32px 0;
+    opacity: 0.6;
+    border: none;
+  }
+  form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  input[type=email] {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    min-width: 260px;
+    background: #fff;
+    color: var(--text);
+  }
+  input[type=email]:focus { outline: none; border-color: var(--accent); }
+  button {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 26px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: opacity .2s ease;
+  }
+  button:hover { opacity: 0.85; }
+  .msg {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--accent);
+    min-height: 18px;
+  }
+  .footer {
+    margin-top: 64px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .footer a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    transition: color .2s ease;
+  }
+  .footer a:hover { color: var(--accent); }
+  .footer .sep {
+    color: var(--line);
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="logo">LAB53</div>
+    <div class="status">Coming Soon</div>
+    <hr class="divider">
+
+    <form id="signup-form">
+      <input type="email" id="email" name="email" placeholder="Your email address" required>
+      <button type="submit">Notify Me</button>
+    </form>
+    <div class="msg" id="form-msg"></div>
+
+    <div class="footer">
+      <a href="https://instagram.com/projectlab53" target="_blank" rel="noopener">Instagram</a>
+      <span class="sep">·</span>
+      <a href="mailto:hello@projectlab53.com">hello@projectlab53.com</a>
+    </div>
+  </div>
+
+  <script>
+    // NOTE: This form is currently client-side only.
+    // To actually collect emails, connect this to a service such as
+    // Formspree, Mailchimp, ConvertKit, or a custom backend endpoint —
+    // replace the code below with a fetch() call to that provider.
+    const form = document.getElementById('signup-form');
+    const msg = document.getElementById('form-msg');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      msg.textContent = "Thanks — we'll let you know when we launch.";
+      form.reset();
+    });
+  </script>
+</body>
+</html>
