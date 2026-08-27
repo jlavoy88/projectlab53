@@ -5,7 +5,7 @@ backend:
   # This is the address of the small OAuth "doorman" worker described in
   # SETUP.md — replace the placeholder below with your deployed Worker URL
   # once you've done the one-time setup. Until then logging in will fail.
-  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
+  base_url: https://lab53-cms-oauth.jlavoy88.workers.dev
   auth_endpoint: auth
 
 # Only you (whoever is logged into the GitHub account that owns/collaborates
