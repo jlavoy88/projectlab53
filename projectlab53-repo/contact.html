@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Contact — LAB53</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Get in touch with LAB53 — studio visits, press, collaborations, and submissions.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2300A99D'/%3E%3Ctext x='32' y='44' font-family='Poppins, sans-serif' font-weight='700' font-size='32' fill='white' text-anchor='middle'%3E53%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,440;0,9..144,560;1,9..144,340;1,9..144,440&family=Poppins:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap topnav-inner">
+    <a href="/index.html" class="topnav-mark"><img src="/assets/logo-teal.png" alt="LAB53"></a>
+    <div class="topnav-links">
+      <a href="/index.html">Mission</a>
+      <a href="/blog.html">Blog</a>
+      <a href="/contact.html" class="current">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="band" style="border-bottom:none;">
+    <div class="wrap">
+      <div class="eyebrow-row"><span class="stamp on-teal">Contact</span><span class="rule"></span></div>
+
+      <div class="contact-grid" style="margin-top:0;">
+        <div class="contact-info">
+          <div class="contact-line">
+            <span class="k">Email</span>
+            <a class="v" href="mailto:hello@projectlab53.com">hello@projectlab53.com</a>
+          </div>
+          <div class="contact-line">
+            <span class="k">Instagram</span>
+            <a class="v" href="https://instagram.com/project_lab53" target="_blank" rel="noopener">@project_lab53</a>
+          </div>
+        </div>
+
+        <form class="contact-form" id="contact-form">
+          <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="field">
+            <label for="reason">Reason</label>
+            <input type="text" id="reason" name="reason" placeholder="Submission, press, collaboration…">
+          </div>
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+            <button type="submit" class="btn">Send message</button>
+            <span class="form-msg" id="form-msg"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div class="foot-mark"><span class="dot"></span> LAB53 — Contemporary art, Caribbean, Latin America &amp; diasporas</div>
+    <div class="foot-links">
+      <a href="mailto:hello@projectlab53.com">Email</a>
+      <a href="https://instagram.com/project_lab53" target="_blank" rel="noopener">Instagram</a>
+      <a href="/contact.html">Contact</a>
+    </div>
+    <div class="foot-meta">Est. 2015</div>
+  </div>
+</footer>
+
+<script>
+  // NOTE: no backend yet — submitting opens the visitor's email client
+  // pre-filled with the message. Replace with a fetch() call to a form
+  // service (Formspree, etc.) once you're ready to collect these directly.
+  (function(){
+    var form = document.getElementById('contact-form');
+    var msg = document.getElementById('form-msg');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var name = document.getElementById('name').value;
+      var email = document.getElementById('email').value;
+      var reason = document.getElementById('reason').value;
+      var message = document.getElementById('message').value;
+      var subject = encodeURIComponent('LAB53 contact — ' + (reason || 'General'));
+      var body = encodeURIComponent(message + '\n\n— ' + name + ' (' + email + ')');
+      window.location.href = 'mailto:hello@projectlab53.com?subject=' + subject + '&body=' + body;
+      msg.textContent = "Opening your email client…";
+    });
+  })();
+</script>
+
+</body>
+</html>
