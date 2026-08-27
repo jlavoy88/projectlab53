@@ -197,3 +197,30 @@ form.contact-form{ display:flex; flex-direction:column; gap:18px; }
   .post-thumb{ aspect-ratio:16/10; }
 }
 
+/* ---------- single post page ---------- */
+.post-single-wrap{ max-width:760px; margin-inline:auto; padding-inline:clamp(20px,5vw,56px); }
+.post-back{ font-family:var(--font-mono); font-size:0.74rem; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:clamp(24px,4vw,40px); }
+.post-back a{ text-decoration:none; color:var(--text-soft); border-bottom:1px solid transparent; transition:color .15s, border-color .15s; }
+.post-back a:hover{ color:var(--text); border-color:var(--teal-500); }
+.post-single-thumb{ aspect-ratio:16/10; overflow:hidden; background:var(--n1); margin-bottom:clamp(22px,3vw,32px); }
+.post-single-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.post-single-meta{ font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-soft); }
+.post-single-title{ font-family:var(--font-display); font-style:italic; font-weight:400; font-size:clamp(1.8rem,4vw,2.7rem); line-height:1.18; text-wrap:balance; margin-top:10px; }
+.post-body{ margin-top:clamp(28px,4vw,40px); max-width:66ch; }
+.post-body p{ font-size:1.02rem; color:var(--text); line-height:1.7; margin-top:1.15em; }
+.post-body p:first-child{ margin-top:0; }
+.post-body p.cap-line{ font-family:var(--font-display); font-style:italic; color:var(--text-soft); font-size:0.96rem; margin-top:1.6em; }
+.post-body p.cap-line + p{ margin-top:0.5em; }
+.post-body p.q{ margin-top:1.6em; }
+.post-body p.q strong{ font-weight:600; }
+.post-body p.note{ font-family:var(--font-display); font-style:italic; color:var(--text-soft); font-size:0.94rem; }
+.post-body blockquote{ margin:1.4em 0; padding-left:1.1em; border-left:2px solid var(--teal-500); font-family:var(--font-display); font-style:italic; color:var(--text-soft); }
+.post-single-foot{ margin-top:clamp(36px,5vw,56px); padding-top:24px; border-top:1px solid var(--border); font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-soft); }
+
+/* clickable post card (whole card is now a link) */
+a.post-card{ text-decoration:none; color:inherit; transition:background .15s ease; }
+a.post-card:hover{ background:var(--bg-raised); }
+a.post-card:hover .post-title{ color:var(--teal-700); }
+:root[data-theme="dark"] a.post-card:hover .post-title{ color:var(--teal-300); }
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) a.post-card:hover .post-title{ color:var(--teal-300); } }
+
