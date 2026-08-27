@@ -1,7 +1,0 @@
-name = "lab53-cms-oauth"
-main = "worker.js"
-compatibility_date = "2026-08-01"
-
-# Secrets (OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET) are NOT set here —
-# set them with `wrangler secret put` as described in SETUP.md, so they
-# never end up committed to the repo.
