@@ -215,6 +215,9 @@ form.contact-form{ display:flex; flex-direction:column; gap:18px; }
 .post-body p.q strong{ font-weight:600; }
 .post-body p.note{ font-family:var(--font-display); font-style:italic; color:var(--text-soft); font-size:0.94rem; }
 .post-body blockquote{ margin:1.4em 0; padding-left:1.1em; border-left:2px solid var(--teal-500); font-family:var(--font-display); font-style:italic; color:var(--text-soft); }
+.post-body a{ color:var(--teal-700); text-decoration-thickness:1px; text-underline-offset:2px; }
+.post-inline-img{ margin:1.8em 0; }
+.post-inline-img img{ width:100%; display:block; }
 .post-single-foot{ margin-top:clamp(36px,5vw,56px); padding-top:24px; border-top:1px solid var(--border); font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-soft); }
 
 /* clickable post card (whole card is now a link) */
