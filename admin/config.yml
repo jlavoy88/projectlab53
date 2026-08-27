@@ -1,0 +1,57 @@
+backend:
+  name: github
+  repo: jlavoy88/projectlab53
+  branch: main
+  # This is the address of the small OAuth "doorman" worker described in
+  # SETUP.md — replace the placeholder below with your deployed Worker URL
+  # once you've done the one-time setup. Until then logging in will fail.
+  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
+  auth_endpoint: auth
+
+# Only you (whoever is logged into the GitHub account that owns/collaborates
+# on this repo) can sign in and publish — that IS the password protection.
+# Add collaborators on the GitHub repo itself to let anyone else in.
+
+media_folder: ""
+public_folder: ""
+
+collections:
+  - name: "posts"
+    label: "Journal Posts"
+    label_singular: "Journal Post"
+    folder: "posts-src"
+    create: true
+    slug: "{{slug}}"
+    path: "{{slug}}/post"
+    media_folder: ""
+    public_folder: ""
+    summary: "{{title}} — {{date}}"
+    sortable_fields: ["date", "title"]
+    fields:
+      - {label: "Title", name: "title", widget: "string", hint: "Plain text, no markdown."}
+      - {label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true}
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        hint: "Sets the color-coded tag on the journal listing — keep to these three for a consistent look."
+        options: ["Exhibitions", "Interview", "Essay"]
+      - {label: "Language", name: "lang", widget: "select", options: ["en", "es"], default: "en", required: false, hint: "For the page's lang attribute — doesn't translate anything."}
+      - label: "Cover Image"
+        name: "image"
+        widget: "image"
+        hint: "Upload a file, or click the link icon to paste an image URL instead (used as-is, no upload)."
+      - label: "Excerpt"
+        name: "excerpt"
+        widget: "text"
+        hint: "One or two sentences. This is what shows on the journal listing page — keep it tight."
+      - label: "Body"
+        name: "body"
+        widget: "markdown"
+        hint: >
+          Use the toolbar for bold, italic, links, quotes, and images — they all render correctly.
+          Two extra conventions this site's style understands, typed as their own line:
+          start a line with "^ " for a small italic caption (e.g. an image credit),
+          start a line with "Q: " for a bold interview question,
+          start a line with "NOTE: " for a small editorial note.
+          Images can go anywhere in the body, on their own line.
+        modes: ["rich_text", "raw"]

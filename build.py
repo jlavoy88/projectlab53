@@ -7,9 +7,11 @@ Usage:
     python3 build.py
 
 No dependencies beyond the Python standard library — nothing to install.
+Works equally on files written by hand and files saved by the /admin editor
+(Decap CMS) — both use the same posts-src/<slug>/post.md convention.
 
 --------------------------------------------------------------------------
-HOW TO WRITE A POST
+HOW TO WRITE A POST BY HAND
 --------------------------------------------------------------------------
 1. Make a new folder: posts-src/your-post-slug/
 2. Inside it, create post.md:
@@ -22,7 +24,8 @@ HOW TO WRITE A POST
        ---
        Your first paragraph.
 
-       Your second paragraph. **Bold** and *italic* both work inline.
+       Your second paragraph. **Bold** and *italic* both work inline,
+       and so do [links](https://example.com).
 
        ^A short caption line, e.g. an image credit or artwork title.
 
@@ -33,10 +36,12 @@ HOW TO WRITE A POST
 
        NOTE: An editorial note, e.g. "This interview originally appeared in..."
 
-3. If your image is a file (not a URL), put it in the same folder
-   (posts-src/your-post-slug/cover.jpg) and set `image: cover.jpg` in the
-   front matter — the build copies it into the post's own journal folder.
-   If `image:` starts with http:// or https://, it's used as-is (hotlinked).
+       ![Alt text for a second image](another-photo.jpg)
+
+3. Images: any image — the cover `image:` field, or one dropped into the body
+   as `![alt](filename.jpg)` on its own line — can be either a local file
+   sitting next to post.md (the build copies it into the post's own journal
+   folder automatically) or a full http(s):// URL (used as-is, hotlinked).
 4. Run:  python3 build.py
 5. Check the result, then:  git add -A && git commit -m "New post: ..." && git push
 
@@ -134,19 +139,65 @@ def esc(s):
              .replace(">", "&gt;").replace('"', "&quot;"))
 
 
+def unquote_yaml_value(v):
+    """Strip a single matching pair of quotes a YAML frontmatter writer
+    (e.g. Decap CMS) may add around a scalar value, and undo its escaping."""
+    v = v.strip()
+    if len(v) >= 2 and v[0] == v[-1] == '"':
+        return v[1:-1].replace('\\"', '"')
+    if len(v) >= 2 and v[0] == v[-1] == "'":
+        return v[1:-1].replace("''", "'")
+    return v
+
+
+def resolve_image(src, post_dir, slug):
+    """Return the URL to use for an image reference. http(s) URLs are used
+    as-is (hotlinked); anything else is treated as a filename living next to
+    post.md and copied into this post's journal output folder."""
+    src = src.strip()
+    if src.startswith(("http://", "https://")):
+        return src
+    src_path = os.path.join(post_dir, src)
+    if not os.path.isfile(src_path):
+        raise ValueError(f"referenced image '{src}' not found in {post_dir}")
+    out_post_dir = os.path.join(OUT_DIR, slug)
+    os.makedirs(out_post_dir, exist_ok=True)
+    filename = os.path.basename(src)
+    shutil.copyfile(src_path, os.path.join(out_post_dir, filename))
+    return f"/journal/{slug}/{filename}"
+
+
 def inline_md(text):
     text = esc(text)
     text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
     text = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"<em>\1</em>", text)
+    # markdown links [text](url) — but not image syntax ![...](...), which
+    # is handled as its own block by render_body before this ever runs.
+    text = re.sub(
+        r'(?<!!)\[(.+?)\]\((.+?)\)',
+        r'<a href="\2" target="_blank" rel="noopener">\1</a>',
+        text,
+    )
     return text
 
 
-def render_body(raw):
+IMAGE_BLOCK_RE = re.compile(r"^!\[(.*?)\]\((.*?)\)$")
+
+
+def render_body(raw, post_dir, slug):
     blocks = [b.strip() for b in re.split(r"\n\s*\n", raw.strip()) if b.strip()]
     out = []
     for b in blocks:
         b = " ".join(line.strip() for line in b.splitlines())
-        if b.startswith("^"):
+        m = IMAGE_BLOCK_RE.match(b)
+        if m:
+            alt, src = m.groups()
+            url = resolve_image(src, post_dir, slug)
+            out.append(
+                f'        <div class="post-inline-img"><img src="{esc(url)}" '
+                f'alt="{esc(alt)}" loading="lazy"></div>'
+            )
+        elif b.startswith("^"):
             out.append(f'        <p class="cap-line">{inline_md(b[1:].strip())}</p>')
         elif b.startswith("> "):
             out.append(f"        <blockquote>{inline_md(b[2:].strip())}</blockquote>")
@@ -162,6 +213,10 @@ def render_body(raw):
 def parse_post(path):
     with open(path, encoding="utf-8") as f:
         raw = f.read()
+    # Decap CMS (the /admin editor) writes frontmatter fenced on both sides
+    # (---\n...\n---\n); hand-written posts only fence the bottom. Accept both.
+    if raw.startswith("---\n"):
+        raw = raw[4:]
     if "\n---\n" not in raw:
         raise ValueError(f"{path}: missing '---' separator between front matter and body")
     fm_raw, body_raw = raw.split("\n---\n", 1)
@@ -170,11 +225,21 @@ def parse_post(path):
         if not line.strip() or ":" not in line:
             continue
         k, v = line.split(":", 1)
-        fm[k.strip().lower()] = v.strip()
+        fm[k.strip().lower()] = unquote_yaml_value(v)
     for required in ("title", "date", "category", "image", "excerpt"):
         if required not in fm:
             raise ValueError(f"{path}: missing required front matter field '{required}'")
     return fm, body_raw
+
+
+def parse_date(raw_date):
+    raw_date = raw_date.strip()
+    for candidate in (raw_date, raw_date[:10]):
+        try:
+            return datetime.strptime(candidate, "%Y-%m-%d")
+        except ValueError:
+            continue
+    return None
 
 
 def main():
@@ -191,25 +256,22 @@ def main():
         if not os.path.isfile(md_path):
             print(f"skip {slug}: no post.md")
             continue
-        fm, body_raw = parse_post(md_path)
         try:
-            date_obj = datetime.strptime(fm["date"], "%Y-%m-%d")
-        except ValueError:
+            fm, body_raw = parse_post(md_path)
+        except ValueError as e:
+            print(f"error: {e}")
+            return 1
+
+        date_obj = parse_date(fm["date"])
+        if date_obj is None:
             print(f"error in {slug}: date must be YYYY-MM-DD, got {fm['date']!r}")
             return 1
 
-        image = fm["image"]
-        if not image.startswith(("http://", "https://")):
-            src_img = os.path.join(post_dir, image)
-            if not os.path.isfile(src_img):
-                print(f"error in {slug}: image file '{image}' not found next to post.md")
-                return 1
-            out_post_dir = os.path.join(OUT_DIR, slug)
-            os.makedirs(out_post_dir, exist_ok=True)
-            shutil.copyfile(src_img, os.path.join(out_post_dir, image))
-            image_ref = f"/journal/{slug}/{image}"
-        else:
-            image_ref = image
+        try:
+            image_ref = resolve_image(fm["image"], post_dir, slug)
+        except ValueError as e:
+            print(f"error in {slug}: {e}")
+            return 1
 
         posts.append(dict(
             slug=slug,
@@ -219,6 +281,7 @@ def main():
             image=image_ref,
             excerpt=fm["excerpt"],
             body_raw=body_raw,
+            post_dir=post_dir,
             lang=fm.get("lang", "en"),
         ))
 
@@ -235,6 +298,12 @@ def main():
         orig_date = p["date_obj"].strftime("%B %-d, %Y") if sys.platform != "win32" else p["date_obj"].strftime("%B %d, %Y")
         tagclass = CATEGORY_CLASS.get(p["category"], DEFAULT_CLASS)
 
+        try:
+            body_html = render_body(p["body_raw"], p["post_dir"], p["slug"])
+        except ValueError as e:
+            print(f"error in {p['slug']}: {e}")
+            return 1
+
         page_html = PAGE_TEMPLATE.format(
             lang=p["lang"],
             title=esc(p["title"]),
@@ -244,7 +313,7 @@ def main():
             category=esc(p["category"]),
             num=num,
             orig_date=orig_date,
-            body=render_body(p["body_raw"]),
+            body=body_html,
         )
         out_post_dir = os.path.join(OUT_DIR, p["slug"])
         os.makedirs(out_post_dir, exist_ok=True)

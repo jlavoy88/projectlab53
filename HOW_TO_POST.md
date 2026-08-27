@@ -2,6 +2,8 @@
 
 No Jekyll, no plugins, nothing to install — just a folder, a text file, and one command. This lives entirely inside your `Website/` folder (and its mirror in `projectlab53-repo/`).
 
+**Prefer a point-and-click editor instead of a text file?** Once you've done the one-time setup in `SETUP.md`, `projectlab53.com/admin/` gives you a login-protected dashboard — write, drop in images, hit Publish, no terminal needed. It uses this exact same `posts-src/` format under the hood, so everything below still applies (and either method can edit the other's posts).
+
 ## 1. Make a new post folder
 
 Inside `posts-src/`, create a folder named after your post's URL slug (lowercase, hyphens, no spaces), e.g.:
